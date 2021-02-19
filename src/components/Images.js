@@ -72,14 +72,14 @@ function Images() {
 
     const startGame = () => {
         // test()
-        let stop = 0        
+        let stopInterval = 0        
         const timerClock = setInterval(() => {
-            setTimer(preTimer => preTimer - 1)
-            stop++
             setHideStart(1)
-            if(stop === 3) {
+            setTimer(previousTime => previousTime - 1)
+            stopInterval++
+            if(stopInterval === 3) {
                 clearInterval(timerClock)
-                stop = 0
+                stopInterval = 0
                 setHideStart()
             }
         }, 1000);
@@ -92,7 +92,6 @@ function Images() {
                 }
                 return {...img}
             })
-            console.log(hideImg)
             setfinalGame(hideImg)
             
         }, 3000)
@@ -102,7 +101,6 @@ function Images() {
         setTimeout(() => {
             setfinalGame(finalGame.map((img, index) => {
                 if(index === previous || index === current) {
-                    // console.log(img.name)
                     img.flipped = !img.flipped
                 }
                   return {...img}
@@ -113,19 +111,16 @@ function Images() {
     const match = (previous, current) => {
         setfinalGame(finalGame.map((img, index) => {
             if(index === previous || index === current) {
-                console.log(previous, current)
                 img.completed = !img.completed
             }
               return {...img}
           }))
-          console.log(finalGame)
     }
 
   const changeFlip = (ind, name, completed) => {
 
     const flipImg = finalGame.map((img, index) => {
         if(ind === index && !img.completed) {
-            // console.log(img, index)
             img.flipped = !img.flipped
         }
           return {...img}
@@ -136,15 +131,11 @@ function Images() {
             setPreName(name)
             setSelectedImg(ind)
         } else if(preName === name && selectedImg != ind && !completed) {
-            // console.log('same')
             setPoints(points + 1)
             setPreName('')
-            console.log(selectedImg)
             match(selectedImg, ind)
         } else if(preName !== name && !completed) {
-            console.log('Diffrent')
             setPreName('')
-            // console.log(selectedImg, name)
             cleanSelectedImg(selectedImg, ind)
         }
 
