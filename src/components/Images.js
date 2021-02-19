@@ -58,7 +58,6 @@ function Images() {
     const [timer, setTimer] = useState(3)
     
     useEffect(() => {
-        // const finalImages = [...imgs, ...imgs]
         let finalImages = []
         imgs.map(img => {
             finalImages.push(JSON.parse(JSON.stringify(img)))
@@ -71,7 +70,6 @@ function Images() {
     },[])
 
     const startGame = () => {
-        // test()
         let stopInterval = 0        
         const timerClock = setInterval(() => {
             setHideStart(1)
@@ -160,21 +158,22 @@ function Images() {
                 {playerName && <h3>{playerName} Your Points Is {points}</h3>}
                 {!playerName && <form onSubmit={saveUserName}>
                 <div className="row form-group">
-                    <label for="exampleInputEmail1">Your Name</label>
-                    <div className="row">
-                        <div className="col-3 mx-auto">
+                    <label className="col-12 mx-auto h3" for="exampleInputEmail1">Your Name</label>
+                    <div className="col-12">
+                        <div className="col-4 mx-auto">
                             <input type="text" name='user' className="form-control" placeholder="Enter Your Name" required/>
                         </div>
                     </div>
-                    <div className='col-3 mx-auto pt-2'><input type="submit" className='btn btn-primary' value="Start Game"/></div>
+                    <div className="mx-auto pt-2">
+                        <input type="submit" className='btn btn-primary' value="Start Game"/>
+                    </div>
                 </div>
                 </form>}
             </div>
             {playerName && <div className="row">
                 {finalGame.map((img, index) => (
                     <div className="col-2 "  >
-                        {/* style={disableGameDiv ? disableGame : ''} */}
-                        <img className='border img-thumbnail {img.completed ? disableGame : ``}' onClick={() => changeFlip(index, img.name, img.completed)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
+                        <img className='border img-thumbnail' onClick={() => changeFlip(index, img.name, img.completed)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
                     </div>
                 ))}
             </div>}
