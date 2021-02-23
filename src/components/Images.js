@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import img1 from "../img/1.png";
 import img2 from "../img/2.png";
@@ -6,6 +6,9 @@ import img3 from "../img/3.png";
 import img4 from "../img/4.png";
 import img5 from "../img/5.png";
 import img6 from "../img/6.png";
+import img7 from "../img/7.png";
+import img8 from "../img/8.png";
+import img9 from "../img/9.png";
 
 const defaultImg = 'https://via.placeholder.com/261x261?text=CLICK'
 
@@ -46,6 +49,24 @@ function Images() {
             loc: img6,
             flipped: true,
             completed: true
+        },
+        {
+            name: 7,
+            loc: img7,
+            flipped: true,
+            completed: true
+        },
+        {
+            name: 8,
+            loc: img8,
+            flipped: true,
+            completed: true
+        },
+        {
+            name: 9,
+            loc: img9,
+            flipped: true,
+            completed: true
         }
     ]
 
@@ -56,46 +77,51 @@ function Images() {
     const [hideStart, setHideStart] = useState()
     const [playerName, setPlayerName] = useState()
     const [timer, setTimer] = useState(3)
+
+    const finalGameRef = useRef([])
+
+    finalGameRef.current = finalGame
     
     useEffect(() => {
         let finalImages = []
         imgs.map(img => {
-            finalImages.push(JSON.parse(JSON.stringify(img)))
-            finalImages.push(JSON.parse(JSON.stringify(img)))
+            finalImages.push({...img})
+            finalImages.push({...img})
         })
-        //2x Shuffling the images to make it more random
-        let shuffle = finalImages.sort(() => Math.random() - 0.5).map((img) => img)
-        let finalBoard = shuffle.sort(() => Math.random() - 0.5).map((img) => img)
-        setfinalGame(finalBoard)
+        setfinalGame(finalImages)
     },[])
+    
 
     const startGame = () => {
         let stopInterval = 0        
+        setHideStart(1)
+        const START_GAME_TIMEOUT = 1000
         const timerClock = setInterval(() => {
-            setHideStart(1)
             setTimer(previousTime => previousTime - 1)
             stopInterval++
             if(stopInterval === 3) {
                 clearInterval(timerClock)
                 stopInterval = 0
                 setHideStart()
+                flipImageOnStart()
             }
-        }, 1000);
+        }, START_GAME_TIMEOUT);
+    }
 
-        setTimeout(() => {
-            const hideImg = finalGame.map(img => {
-                if(img) {
-                    img.flipped = !img.flipped
-                    img.completed = !img.completed
-                }
-                return {...img}
-            })
-            setfinalGame(hideImg)
-            
-        }, 3000)
+
+    const flipImageOnStart = () => {
+        const hideImg = finalGameRef.current.map(img => {
+            if(img) {
+                img.flipped = !img.flipped
+                img.completed = !img.completed
+            }
+            return {...img}
+        })
+        setfinalGame(hideImg)
     }
 
     const cleanSelectedImg = (previous, current) => {
+        const RESET_SELECTED_IMG_TIMEOUT = 300
         setTimeout(() => {
             setfinalGame(finalGame.map((img, index) => {
                 if(index === previous || index === current) {
@@ -103,7 +129,7 @@ function Images() {
                 }
                   return {...img}
               }))
-        }, 400)
+        }, RESET_SELECTED_IMG_TIMEOUT)
     }
 
     const match = (previous, current) => {
@@ -128,7 +154,7 @@ function Images() {
         if(!preName && !completed) {
             setPreName(name)
             setSelectedImg(ind)
-        } else if(preName === name && selectedImg != ind && !completed) {
+        } else if(preName === name && selectedImg !== ind && !completed) {
             setPoints(points + 1)
             setPreName('')
             match(selectedImg, ind)
@@ -136,21 +162,41 @@ function Images() {
             setPreName('')
             cleanSelectedImg(selectedImg, ind)
         }
-
-    
   }
+
+
+  const generateLevel = (level) => {
+    const selectImg = (limit) => {
+        let levelList = []
+        let i
+        for(i = 0; i < limit; i++) {
+            levelList.push({...finalGame[i]})
+        }
+        let shuffle = levelList.sort(() => Math.random() - 0.5)
+        setfinalGame(shuffle)
+        startGame()
+    }
+    switch (+level) {
+        case 1:
+            selectImg(6)
+          break;
+        case 2:
+            selectImg(12)
+          break;
+        case 3:
+            selectImg(18)
+          break;
+      }
+  }
+
+
 
   const saveUserName = (e) => {
       e.preventDefault()
       setPlayerName(e.target.elements.user.value.charAt(0).toUpperCase() + e.target.elements.user.value.slice(1))
-      startGame()
+      generateLevel(e.target.elements.level.value)
+      
   }
-
-  const disableGame = {
-    pointerEvents: 'none',
-    opacity: '0.9'
-}
-
     return (
         <div className='container'>
             <div className='text-center py-4'>
@@ -162,6 +208,16 @@ function Images() {
                     <div className="col-12">
                         <div className="col-4 mx-auto">
                             <input type="text" name='user' className="form-control" placeholder="Enter Your Name" required/>
+                        </div>
+                    </div>
+                    <div className="col-12 pt-2">
+                        <div className='col-4 mx-auto'>
+                            <select className="form-select py-2 pr-5" name='level' required>
+                                <option value=''>Select Game Level</option>
+                                <option value="1">Simple</option>
+                                <option value="2">Medium</option>
+                                <option value="3">Difficult</option>
+                            </select>
                         </div>
                     </div>
                     <div className="mx-auto pt-2">
