@@ -1,0 +1,36 @@
+{
+  "files": {
+    "main.css": "/react-memory-game/static/css/main.8c8b27cf.chunk.css",
+    "main.js": "/react-memory-game/static/js/main.5399fdd0.chunk.js",
+    "main.js.map": "/react-memory-game/static/js/main.5399fdd0.chunk.js.map",
+    "runtime-main.js": "/react-memory-game/static/js/runtime-main.8b014ab6.js",
+    "runtime-main.js.map": "/react-memory-game/static/js/runtime-main.8b014ab6.js.map",
+    "static/css/2.150d169a.chunk.css": "/react-memory-game/static/css/2.150d169a.chunk.css",
+    "static/js/2.865dd80e.chunk.js": "/react-memory-game/static/js/2.865dd80e.chunk.js",
+    "static/js/2.865dd80e.chunk.js.map": "/react-memory-game/static/js/2.865dd80e.chunk.js.map",
+    "static/js/3.a69e3277.chunk.js": "/react-memory-game/static/js/3.a69e3277.chunk.js",
+    "static/js/3.a69e3277.chunk.js.map": "/react-memory-game/static/js/3.a69e3277.chunk.js.map",
+    "index.html": "/react-memory-game/index.html",
+    "static/css/2.150d169a.chunk.css.map": "/react-memory-game/static/css/2.150d169a.chunk.css.map",
+    "static/css/main.8c8b27cf.chunk.css.map": "/react-memory-game/static/css/main.8c8b27cf.chunk.css.map",
+    "static/js/2.865dd80e.chunk.js.LICENSE.txt": "/react-memory-game/static/js/2.865dd80e.chunk.js.LICENSE.txt",
+    "static/media/1.7ebfef5c.png": "/react-memory-game/static/media/1.7ebfef5c.png",
+    "static/media/10.c84775b9.png": "/react-memory-game/static/media/10.c84775b9.png",
+    "static/media/12.b37aa1ed.png": "/react-memory-game/static/media/12.b37aa1ed.png",
+    "static/media/2.8444368b.png": "/react-memory-game/static/media/2.8444368b.png",
+    "static/media/3.5b925407.png": "/react-memory-game/static/media/3.5b925407.png",
+    "static/media/4.da5b34d9.png": "/react-memory-game/static/media/4.da5b34d9.png",
+    "static/media/5.4471d348.png": "/react-memory-game/static/media/5.4471d348.png",
+    "static/media/6.2d309aaf.png": "/react-memory-game/static/media/6.2d309aaf.png",
+    "static/media/7.6b9fc634.png": "/react-memory-game/static/media/7.6b9fc634.png",
+    "static/media/8.0eb8a98c.png": "/react-memory-game/static/media/8.0eb8a98c.png",
+    "static/media/9.d48d696c.png": "/react-memory-game/static/media/9.d48d696c.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8b014ab6.js",
+    "static/css/2.150d169a.chunk.css",
+    "static/js/2.865dd80e.chunk.js",
+    "static/css/main.8c8b27cf.chunk.css",
+    "static/js/main.5399fdd0.chunk.js"
+  ]
+}
