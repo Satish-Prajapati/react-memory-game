@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import img1 from "../img/1.png";
 import img2 from "../img/2.png";
@@ -13,7 +13,7 @@ import img10 from "../img/10.png";
 import img11 from "../img/11.png";
 import img12 from "../img/12.png";
 
-const defaultImg = 'https://via.placeholder.com/261x261?text=CLICK'
+const defaultImg = 'https://via.placeholder.com/261x261/000/fff?text=</>'
 
 const imgs = [
     {
@@ -92,12 +92,12 @@ const imgs = [
 const START_GAME_TIMEOUT = 1000
 const RESET_SELECTED_IMG_TIMEOUT = 300
 const level = {
-    easy: 12,
-    medium: 18,
-    difficult: 24
+    Simple: 6,
+    Medium: 9,
+    Difficult: 12
 }
 
-let imageIndex1, imageName1
+let imageIndex1, imageName1, gameLevel, stopInterval
 
 function useAsyncReference(value) {
     const ref = useRef(value);
@@ -113,15 +113,14 @@ function useAsyncReference(value) {
 
 function Images() {
     const [finalGame, setfinalGame] = useAsyncReference([]);
-    const [points, setPoints] = useState(0)
+    const [steps, setSteps] = useState(0)
     const [hideStart, setHideStart] = useState()
     const [playerName, setPlayerName] = useState()
     const [timer, setTimer] = useState(3)
-
-    const finalGameRef = useRef([])
+    const [correctSteps, setCorrectSteps] = useState(1)
 
     const startGame = () => {
-        let stopInterval = 0        
+        stopInterval = 0    
         setHideStart(1)
         const timerClock = setInterval(() => {
             setTimer(previousTime => previousTime - 1)
@@ -136,10 +135,11 @@ function Images() {
 
 
     const flipImageOnStart = () => {
-        const hideImg = finalGame.current.map(img => {
+        const finalGameClone = [...finalGame.current]
+        const hideImg = finalGameClone.map(img => {
             if(img) {
-                img.flipped = !img.flipped
-                img.completed = !img.completed
+                img.flipped = false
+                img.completed = false
             }
             return {...img}
         })
@@ -148,18 +148,20 @@ function Images() {
 
     const cleanSelectedImg = (previous, current) => {
         setTimeout(() => {
-            const flipBackImages = finalGame.current.map((img, index) => {
+            const finalGameClone = [...finalGame.current]
+            const flipBackImages = finalGameClone.map((img, index) => {
                 if(index === previous || index === current) {
                     img.flipped = !img.flipped
                 }
-                  return {...img}
+                return {...img}
             })
             setfinalGame(flipBackImages)
         }, RESET_SELECTED_IMG_TIMEOUT)
     }
 
     const match = (previous, current) => {
-        const setCompleted = finalGame.current.map((img, index) => {
+        const finalGameClone = [...finalGame.current]
+        const setCompleted = finalGameClone.map((img, index) => {
             if(index === previous || index === current) {
                 img.completed = !img.completed
             }
@@ -168,61 +170,90 @@ function Images() {
         setfinalGame(setCompleted)
     }
 
-  const flipOnClick = (indexOfImage, name, completed) => {
+  const flipOnClick = (indexOfImage, name, completed, flipped) => {
 
-    const flipImg = finalGame.current.map((img, index) => {
-        if(indexOfImage === index && !img.completed) {
-            img.flipped = !img.flipped
-        }
-          return {...img}
-      })
-      setfinalGame(flipImg)
-
-      if(!imageName1 && !completed ) {
-        imageName1 = name
-        imageIndex1 = indexOfImage
-      } else if(imageName1 === name && imageIndex1 !== indexOfImage && !completed) {
-        setPoints(points + 1)
-        match(imageIndex1, indexOfImage)
-        imageIndex1 = 0
-        imageName1 = ''
-      } else if(imageName1 !== name && !completed) {
-        cleanSelectedImg(imageIndex1, indexOfImage)
-        imageIndex1 = 0
-        imageName1 = ''
-      } else {
-        imageIndex1 = 0
-        imageName1 = ''
-      }
+    if (!flipped) {
+        const finalGameClone = [...finalGame.current]
+        const flipImg = finalGameClone.map((img, index) => {
+            if(indexOfImage === index && !img.completed) {
+                img.flipped = !img.flipped
+            }
+              return {...img}
+          })
+          setfinalGame(flipImg)
+    
+          if(!imageName1 && !completed ) {
+            imageName1 = name
+            imageIndex1 = indexOfImage
+          } else if(imageName1 === name && imageIndex1 !== indexOfImage && !completed) {
+            setCorrectSteps(correctSteps - 1)
+            setSteps(steps + 1)
+            match(imageIndex1, indexOfImage)
+            imageIndex1 = 0
+            imageName1 = ''
+          } else if(imageName1 !== name && !completed) {
+            setSteps(steps + 1)
+            cleanSelectedImg(imageIndex1, indexOfImage)
+            imageIndex1 = 0
+            imageName1 = ''
+          }
+    }
+  }
+  
+  const shuffle = (levelList) => {
+    if(gameLevel === 'Simple') {
+        const shuffledImages = levelList.sort(() => Math.random() - 0.5)
+        const shuffledImages2 = shuffledImages.sort(() => Math.random() - 0.5)
+        return shuffledImages2
+    } else {
+        const shuffledImages = levelList.sort(() => Math.random() - 0.5)
+        return shuffledImages
+    }
   }
 
+  const selectImg = (limit) => {
+    const levelList = imgs.slice(0,limit)
+    levelList.push(...levelList)
+    const randomImages = shuffle(levelList)
+    setfinalGame(randomImages)
+    startGame()
+}
 
   const generateLevel = (levelDifficulty) => {
-    const selectImg = (limit) => {
-        let finalImages = []
-        imgs.map(img => {
-            finalImages.push({...img})
-            finalImages.push({...img})
-        })
-        let levelList = []
-        levelList = finalImages.slice(0,limit)
-        let shuffle = levelList.sort(() => Math.random() - 0.5)
-        setfinalGame(shuffle)
-        startGame()
-    }
+    setCorrectSteps(level[levelDifficulty])
+    gameLevel = levelDifficulty
     switch (levelDifficulty) {
-        case 'simple':
-            selectImg(level.easy)
+        case 'Simple':
+            selectImg(level.Simple)
           break;
-        case 'medium':
-            selectImg(level.medium)
+        case 'Medium':
+            selectImg(level.Medium)
           break;
-        case 'difficult':
-            selectImg(level.difficult)
+        case 'Difficult':
+            selectImg(level.Difficult)
           break;
       }
   }
 
+  const gameReset = (e) => {
+      e.preventDefault()
+      setTimer(3)
+      setSteps(0)
+      setCorrectSteps(level[gameLevel])
+      const levelList = imgs.slice(0,level[gameLevel])
+      levelList.push(...levelList)
+      const randomImages = shuffle(levelList)
+        const randomImagesClone = [...randomImages]
+        const hideImg = randomImagesClone.map(img => {
+            if(img) {
+                img.flipped = true
+                img.completed = true
+            }
+            return {...img}
+        })
+        setfinalGame(hideImg)
+      startGame()
+  }
 
 
   const saveUserName = (e) => {
@@ -231,46 +262,80 @@ function Images() {
       const  selectedLevel = e.target.elements.level.value
       setPlayerName(userName)
       generateLevel(selectedLevel)
-      
   }
 
     return (
-        <div className='container pb-5'>
-            <div className='text-center py-4'>
-                {hideStart && playerName  && <h3>{playerName} Your game starts in {timer}</h3>}
-                {playerName && !hideStart && <h3>{playerName} Your Points Is {points}</h3>}
-                {!playerName && <form onSubmit={saveUserName}>
-                <div className="row form-group">
-                    <label className="col-12 mx-auto h3" for="exampleInputEmail1">Your Name</label>
-                    <div className="col-12">
-                        <div className="col-4 mx-auto">
-                            <input type="text" name='user' className="form-control" placeholder="Enter Your Name" required/>
-                        </div>
-                    </div>
-                    <div className="col-12 pt-2">
-                        <div className='col-4 mx-auto'>
-                            <select className="form-select py-2 pr-5" name='level' required>
-                                <option value=''>Select Game Level</option>
-                                <option value="simple">Simple</option>
-                                <option value="medium">Medium</option>
-                                <option value="difficult">Difficult</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="mx-auto pt-2">
-                        <input type="submit" className='btn btn-primary' value="Start Game"/>
+        <>
+            <nav className="navbar navbar-expand navbar-dark bg-dark">
+                <div className="container">
+                    <a className="navbar-brand" href="/">MEMORY GAME</a>
+                    <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
+                        <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
+                        </ul>
+                        {playerName && <div className="form-inline my-2 my-lg-0">
+                            <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
+                                <li className="game-info mx-2">Level: {gameLevel}</li>
+                                <li className="game-info mx-2">Steps: {steps}</li>
+                            </ul>
+                            {!hideStart && <input type="button" className="btn btn-outline-warning mx-2" onClick={gameReset} value='Reset' />}
+                            <button className="btn btn-outline-danger mx-2" onClick={() => window.location.reload(false)} >New Game</button>
+                        </div>}
                     </div>
                 </div>
-                </form>}
-            </div>
-            {playerName && <div className="row">
-                {finalGame.current.map((img, index) => (
-                    <div className="col-2 "  >
-                        <img className='border img-thumbnail' onClick={() => flipOnClick(index, img.name, img.completed)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
+            </nav>
+
+            <div className='container pb-5'>
+                <div className='text-center py-3'>
+                    {hideStart && playerName  && <h3>{playerName} Your game starts in {timer}</h3>}
+                    {!playerName && <form onSubmit={saveUserName}>
+                    <div className="row form-group">
+                        <label className="col-12 mx-auto h3" for="exampleInputEmail1">Your Name</label>
+                        <div className="col-12">
+                            <div className="col-4 mx-auto">
+                                <input type="text" name='user' className="form-control" placeholder="Enter Your Name" required/>
+                            </div>
+                        </div>
+                        <div className="col-12 pt-2">
+                            <div className='col-4 mx-auto'>
+                                <select className="form-select py-2 pr-5" name='level' required>
+                                    <option value=''>Select Game Level</option>
+                                    <option value="Simple">Simple</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Difficult">Difficult</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mx-auto pt-2">
+                            <input type="submit" className='btn btn-primary' value="Start Game"/>
+                        </div>
                     </div>
-                ))}
-            </div>}
-        </div>
+                    </form>}
+                </div>
+                {!correctSteps && <div class="card w-50 mx-auto text-white">
+                    <h5 class="card-header bg-dark">{playerName} You Game Finished!</h5>
+                    <div class="card-body card-text">
+                        <h5 class="card-title">Your Score Card</h5>
+                        <p class="card-text">Game Level : {gameLevel}</p>
+                        <p class="card-text">Total Steps : {steps}</p>
+                        <p class="card-text">Accuracy : {Math.round((level[gameLevel] / steps) * 100)}%</p>
+                        <input type="button" className="btn btn-outline-warning mx-2" onClick={gameReset} value='Reset' />
+                        <button className="btn btn-outline-danger mx-2" onClick={() => window.location.reload(false)} >New Game</button>
+                    </div>
+                </div>}
+                {playerName && correctSteps > 0 && <div className="row">
+                    {finalGame.current.map((img, index) => (
+                        <div className="col-2 pb-3"  >
+                            <img className={img.completed ? 'img-thumbnail border-0 completed' : 'img-thumbnail border-0 uncompleted'} onClick={() => flipOnClick(index, img.name, img.completed, img.flipped)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
+                        </div>
+                    ))}
+                </div>}
+            </div>
+            <footer className="bg-dark text-center text-lg-start fixed-bottom">
+                <div className="text-center p-3 text-white">
+                    © 2021 Copyright: Satish Prajapati
+                </div>
+            </footer>
+        </>
     )
 
     
