@@ -229,24 +229,34 @@ function Images() {
       }
   }
 
+  const generateNewGame = () => {
+    setTimer(3)
+    setSteps(0)
+    setCorrectSteps(level[gameLevel])
+    const levelList = imgs.slice(0,level[gameLevel])
+    levelList.push(...levelList)
+    const randomImages = shuffle(levelList)
+      const randomImagesClone = [...randomImages]
+      const hideImg = randomImagesClone.map(img => {
+          if(img) {
+              img.flipped = true
+              img.completed = true
+          }
+          return {...img}
+      })
+      setfinalGame(hideImg)
+    startGame()
+  }
+
+  const changeLevel = (e) => {
+      e.preventDefault()
+      gameLevel = e.target.elements.level.value
+      generateNewGame()
+  }
+
   const gameReset = (e) => {
       e.preventDefault()
-      setTimer(3)
-      setSteps(0)
-      setCorrectSteps(level[gameLevel])
-      const levelList = imgs.slice(0,level[gameLevel])
-      levelList.push(...levelList)
-      const randomImages = shuffle(levelList)
-        const randomImagesClone = [...randomImages]
-        const hideImg = randomImagesClone.map(img => {
-            if(img) {
-                img.flipped = true
-                img.completed = true
-            }
-            return {...img}
-        })
-        setfinalGame(hideImg)
-      startGame()
+      generateNewGame()
   }
 
 
@@ -261,7 +271,7 @@ function Images() {
         <>
             <nav className="navbar navbar-expand navbar-dark bg-dark">
                 <div className="container">
-                    <a className="navbar-brand" href="/">MEMORY GAME</a>
+                    <a className="navbar-brand" href="/react-memory-game/">MEMORY GAME</a>
                     <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
                         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                         </ul>
@@ -311,8 +321,25 @@ function Images() {
                         <p className="card-text">Game Level : {gameLevel}</p>
                         <p className="card-text">Total Steps : {steps}</p>
                         <p className="card-text">Accuracy : {Math.round((level[gameLevel] / steps) * 100)}%</p>
+
+                        <form className="form-inline py-3" onSubmit={changeLevel}>
+                            <div className="form-group mb-2 mx-auto">
+                                <select className="form-select py-2 pr-5" name='level' required>
+                                        <option value=''>Change Level</option>
+                                        <option value="Simple">Simple</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Difficult">Difficult</option>
+                                </select>
+                                <button type="submit" className="btn btn-outline-success ml-2">Change</button>
+                            </div>
+                        </form>
+
+                        <div className="text-center mx-auto">
                         <input type="button" className="btn btn-outline-warning mx-2" onClick={gameReset} value='Reset' />
                         <button className="btn btn-outline-danger mx-2" onClick={() => window.location.reload(false)} >New Game</button>
+                        </div>
+                        
+                    
                     </div>
                 </div>}
                 {playerName && correctSteps > 0 && <div className={gameLevel === 'Simple' || gameLevel === 'Difficult' ? "row text-center w-75 mx-auto" : "row text-center"}>
