@@ -201,17 +201,11 @@ function Images() {
   }
   
   const shuffle = (levelList) => {
-    if(gameLevel === 'Simple') {
-        const shuffledImages = levelList.sort(() => Math.random() - 0.5)
-        const shuffledImages2 = shuffledImages.sort(() => Math.random() - 0.5)
-        return shuffledImages2
-    } else {
-        const shuffledImages = levelList.sort(() => Math.random() - 0.5)
-        return shuffledImages
-    }
+    const shuffledImages = levelList.sort(() => Math.random() - 0.5)
+    return shuffledImages
   }
 
-  const selectImg = (limit) => {
+  const selectLevelImages = (limit) => {
     const levelList = imgs.slice(0,limit)
     levelList.push(...levelList)
     const randomImages = shuffle(levelList)
@@ -224,13 +218,13 @@ function Images() {
     gameLevel = levelDifficulty
     switch (levelDifficulty) {
         case 'Simple':
-            selectImg(level.Simple)
+            selectLevelImages(level.Simple)
           break;
         case 'Medium':
-            selectImg(level.Medium)
+            selectLevelImages(level.Medium)
           break;
         case 'Difficult':
-            selectImg(level.Difficult)
+            selectLevelImages(level.Difficult)
           break;
       }
   }
@@ -263,7 +257,6 @@ function Images() {
       setPlayerName(userName)
       generateLevel(selectedLevel)
   }
-
     return (
         <>
             <nav className="navbar navbar-expand navbar-dark bg-dark">
@@ -288,9 +281,9 @@ function Images() {
                 <div className='text-center py-3'>
                     {hideStart && playerName  && <h3>{playerName} Your game starts in {timer}</h3>}
                     {!playerName && <form onSubmit={saveUserName}>
-                    <div className="row form-group">
-                        <label className="col-12 mx-auto h3" for="exampleInputEmail1">Your Name</label>
-                        <div className="col-12">
+                    <div className="row form-group ">
+                        <label className="col-12 mx-auto h1 pt-5" for="exampleInputEmail1">Welcome To Memory Game</label>
+                        <div className="col-12 pt-5">
                             <div className="col-4 mx-auto">
                                 <input type="text" name='user' className="form-control" placeholder="Enter Your Name" required/>
                             </div>
@@ -306,26 +299,26 @@ function Images() {
                             </div>
                         </div>
                         <div className="mx-auto pt-2">
-                            <input type="submit" className='btn btn-primary' value="Start Game"/>
+                            <input type="submit" className='btn btn-outline-dark' value="Start Game"/>
                         </div>
                     </div>
                     </form>}
                 </div>
-                {!correctSteps && <div class="card w-50 mx-auto text-white">
-                    <h5 class="card-header bg-dark">{playerName} You Game Finished!</h5>
-                    <div class="card-body card-text">
-                        <h5 class="card-title">Your Score Card</h5>
-                        <p class="card-text">Game Level : {gameLevel}</p>
-                        <p class="card-text">Total Steps : {steps}</p>
-                        <p class="card-text">Accuracy : {Math.round((level[gameLevel] / steps) * 100)}%</p>
+                {!correctSteps && <div className="card w-50 mx-auto text-white">
+                    <h5 className="card-header bg-dark">{playerName} You Game Finished!</h5>
+                    <div className="card-body card-text">
+                        <h5 className="card-title">Your Score Card</h5>
+                        <p className="card-text">Game Level : {gameLevel}</p>
+                        <p className="card-text">Total Steps : {steps}</p>
+                        <p className="card-text">Accuracy : {Math.round((level[gameLevel] / steps) * 100)}%</p>
                         <input type="button" className="btn btn-outline-warning mx-2" onClick={gameReset} value='Reset' />
                         <button className="btn btn-outline-danger mx-2" onClick={() => window.location.reload(false)} >New Game</button>
                     </div>
                 </div>}
-                {playerName && correctSteps > 0 && <div className="row">
+                {playerName && correctSteps > 0 && <div className={gameLevel === 'Simple' || gameLevel === 'Difficult' ? "row text-center w-75 mx-auto" : "row text-center"}>
                     {finalGame.current.map((img, index) => (
-                        <div className="col-2 pb-3"  >
-                            <img className={img.completed ? 'img-thumbnail border-0 completed' : 'img-thumbnail border-0 uncompleted'} onClick={() => flipOnClick(index, img.name, img.completed, img.flipped)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
+                        <div className={gameLevel === 'Simple' ? "col-3 pb-3" : "col-2 pb-3"}  >
+                            <img className={img.completed ? 'img-thumbnail border-0 completed' : 'img-thumbnail border-0 uncompleted'} style={{width: '150px'}}  onClick={() => flipOnClick(index, img.name, img.completed, img.flipped)} key={index} src={img.flipped ? img.loc : defaultImg} alt=""/>
                         </div>
                     ))}
                 </div>}
