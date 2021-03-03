@@ -1,5 +1,34 @@
+body {
+  background-color: #f4f9fa;
+}
+
 .App {
   text-align: center;
+}
+
+.completed {
+  background-color: #ccf3dc;
+}
+
+.uncompleted {
+  background-color: #000;
+}
+
+.push-righ {
+  margin-left: 30% ;
+}
+
+.game-info{
+  color: #fff;
+  font-size: 20px;
+}
+
+.bg-dark {
+  background-color: #000!important;
+}
+
+.card-text {
+  background-color: #282c34;
 }
 
 .App-logo {
